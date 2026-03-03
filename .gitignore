@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage & tests
+coverage/
+.nyc_output/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Mobile (React Native)
+mobile/android/
+mobile/ios/
+mobile/.expo/
+*.keystore
+
+# Firebase service account (never commit)
+**/firebase-service-account.json
+google-services.json
+GoogleService-Info.plist
+
+# Uploads (local dev)
+uploads/tmp/
