@@ -3,9 +3,11 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import mongoSanitize from 'express-mongo-sanitize';
+import swaggerUi from 'swagger-ui-express';
 import { pinoHttp } from 'pino-http';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
+import { swaggerSpec } from './config/swagger.js';
 import { globalRateLimiter } from './middlewares/rateLimiter.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { notFoundHandler } from './middlewares/notFound.middleware.js';
@@ -43,6 +45,9 @@ export function createApp(): Application {
 
   // ── Rate limiting ─────────────────────────────────────
   app.use(globalRateLimiter);
+
+  // ── API docs (Swagger UI) ─────────────────────────────
+  app.use(`${env.API_PREFIX}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   // ── Routes ────────────────────────────────────────────
   app.use(env.API_PREFIX, apiRouter);

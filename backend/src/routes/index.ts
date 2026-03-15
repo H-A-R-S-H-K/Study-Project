@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import healthRoutes from './health.routes.js';
+import authRoutes from './auth.routes.js';
 
 /**
  * Root API router. Feature routers (auth, users, vehicles, requests, offers,
@@ -8,9 +9,9 @@ import healthRoutes from './health.routes.js';
 const router = Router();
 
 router.use(healthRoutes);
+router.use('/auth', authRoutes);
 
-// Phase 2+ →
-// router.use('/auth', authRoutes);
+// Phase 3+ →
 // router.use('/users', userRoutes);
 // router.use('/vehicles', vehicleRoutes);
 // router.use('/requests', requestRoutes);
