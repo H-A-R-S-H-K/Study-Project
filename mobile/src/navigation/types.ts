@@ -5,12 +5,14 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
  * `navigation.navigate` and `route.params` are fully type-checked — no string
  * typos, no untyped params.
  */
+import type { UserRole } from '../types/domain';
+
 export type AuthStackParamList = {
   Welcome: undefined;
   PhoneEntry: undefined;
   OtpVerify: { phone: string };
-  RoleSelect: undefined;
-  ProfileSetup: { role: string };
+  RoleSelect: { registrationToken: string };
+  ProfileSetup: { registrationToken: string; role: UserRole };
 };
 
 export type CustomerTabParamList = {

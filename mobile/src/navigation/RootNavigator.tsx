@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
 import type { RootStackParamList } from './types';
+import { AuthNavigator } from './AuthNavigator';
 import { PlaceholderScreen } from '../common/components/PlaceholderScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -25,9 +26,7 @@ export function RootNavigator(): React.JSX.Element {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
-          <Stack.Screen name="Auth">
-            {() => <PlaceholderScreen title="Authentication" subtitle="Phase 2" />}
-          </Stack.Screen>
+          <Stack.Screen name="Auth" component={AuthNavigator} />
         ) : isCustomer ? (
           <Stack.Screen name="CustomerApp">
             {() => <PlaceholderScreen title="Customer Home" subtitle="Phase 5" />}
