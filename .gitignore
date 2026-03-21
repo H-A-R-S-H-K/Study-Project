@@ -43,5 +43,6 @@ mobile/.expo/
 google-services.json
 GoogleService-Info.plist
 
-# Uploads (local dev)
-uploads/tmp/
+# Uploads (local dev disk-storage fallback)
+uploads/
+backend/uploads/

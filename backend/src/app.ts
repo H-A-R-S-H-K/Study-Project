@@ -46,6 +46,9 @@ export function createApp(): Application {
   // ── Rate limiting ─────────────────────────────────────
   app.use(globalRateLimiter);
 
+  // ── Local upload serving (dev fallback when Cloudinary is unset) ──
+  app.use('/uploads', express.static('uploads'));
+
   // ── API docs (Swagger UI) ─────────────────────────────
   app.use(`${env.API_PREFIX}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

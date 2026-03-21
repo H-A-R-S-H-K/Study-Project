@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ZodError } from 'zod';
 import mongoose from 'mongoose';
+import { MulterError } from 'multer';
 import { ApiError } from '../utils/ApiError.js';
 import { logger } from '../config/logger.js';
 import { isProd } from '../config/env.js';
@@ -34,6 +35,12 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
   } else if (err instanceof mongoose.Error.CastError) {
     statusCode = StatusCodes.BAD_REQUEST;
     message = `Invalid value for '${err.path}'`;
+  } else if (err instanceof MulterError) {
+    statusCode = StatusCodes.BAD_REQUEST;
+    message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'File is too large (max 5 MB)'
+        : `Upload error: ${err.message}`;
   } else if (isDuplicateKeyError(err)) {
     statusCode = StatusCodes.CONFLICT;
     message = 'Duplicate value violates a unique constraint';
