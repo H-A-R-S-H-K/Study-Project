@@ -49,6 +49,48 @@ export interface User {
   ratingSummary: { average: number; count: number };
 }
 
+export interface Vehicle {
+  id: string;
+  owner: string;
+  type: VehicleType;
+  title: string;
+  make?: string;
+  modelName?: string;
+  year?: number;
+  color?: string;
+  registrationNumber: string;
+  capacity?: number;
+  images: string[];
+  verifiedRegistration: boolean;
+  isAvailable: boolean;
+  createdAt: string;
+}
+
+export interface DriverProfile {
+  id: string;
+  user: string;
+  licenseNumber: string;
+  licenseVerified: boolean;
+  experienceYears: number;
+  vehicleCategories: VehicleType[];
+  bio?: string;
+  isAvailable: boolean;
+  createdAt: string;
+}
+
+export const VEHICLE_TYPES: VehicleType[] = [
+  'bike',
+  'auto',
+  'car',
+  'suv',
+  'van',
+  'mini_truck',
+  'pickup',
+  'tractor',
+  'tempo',
+  'bus',
+];
+
 /** Standard API envelope every request returns. */
 export interface ApiEnvelope<T> {
   success: boolean;
