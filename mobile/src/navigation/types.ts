@@ -24,9 +24,15 @@ export type CustomerTabParamList = {
 
 export type ProviderTabParamList = {
   Feed: undefined;
-  MyOffers: undefined;
+  Manage: undefined; // Vehicles (owner) or Driver profile (driver)
   Chats: undefined;
   Profile: undefined;
+};
+
+/** Nested stack for the vehicle owner's "Manage" tab. */
+export type VehiclesStackParamList = {
+  VehicleList: undefined;
+  VehicleForm: { vehicleId?: string };
 };
 
 export type RootStackParamList = {
