@@ -4,12 +4,14 @@ import { toDriverProfileDto, type DriverProfileDto } from '../dtos/driver.dto.js
 import { ApiError } from '../utils/ApiError.js';
 import { DocumentType, type VehicleType } from '../types/enums.js';
 import type { UploadedFile } from './storage.service.js';
+import type { GeoPoint } from '../models/geo.schema.js';
 
 export interface UpsertDriverInput {
   licenseNumber: string;
   experienceYears: number;
   vehicleCategories: VehicleType[];
   bio?: string;
+  location?: GeoPoint;
 }
 
 /**
@@ -30,6 +32,12 @@ class DriverService {
   async setAvailability(userId: string, isAvailable: boolean): Promise<DriverProfileDto> {
     const profile = await this.requireProfile(userId);
     const updated = await driverRepository.updateById(profile.id, { isAvailable });
+    return toDriverProfileDto(updated!);
+  }
+
+  async updateLocation(userId: string, location: GeoPoint): Promise<DriverProfileDto> {
+    const profile = await this.requireProfile(userId);
+    const updated = await driverRepository.updateById(profile.id, { location });
     return toDriverProfileDto(updated!);
   }
 

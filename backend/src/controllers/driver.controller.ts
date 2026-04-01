@@ -25,6 +25,11 @@ export const setDriverAvailability = asyncHandler(async (req: Request, res: Resp
   ApiResponse.ok(res, profile, 'Availability updated');
 });
 
+export const updateDriverLocation = asyncHandler(async (req: Request, res: Response) => {
+  const profile = await driverService.updateLocation(uid(req), req.body.location);
+  ApiResponse.ok(res, profile, 'Location updated');
+});
+
 export const uploadLicense = asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) throw ApiError.badRequest('No document uploaded');
   const profile = await driverService.uploadLicense(

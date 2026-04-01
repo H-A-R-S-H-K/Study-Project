@@ -6,6 +6,7 @@ import { uploadDocument } from '../middlewares/upload.middleware.js';
 import {
   upsertDriverSchema,
   driverAvailabilitySchema,
+  driverLocationSchema,
 } from '../validators/driver.validators.js';
 import { UserRole } from '../types/enums.js';
 
@@ -28,6 +29,12 @@ router.patch(
   '/me/availability',
   validate({ body: driverAvailabilitySchema }),
   ctrl.setDriverAvailability,
+);
+
+router.patch(
+  '/me/location',
+  validate({ body: driverLocationSchema }),
+  ctrl.updateDriverLocation,
 );
 
 /**
