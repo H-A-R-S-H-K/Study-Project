@@ -4,6 +4,7 @@ import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import vehicleRoutes from './vehicle.routes.js';
 import driverRoutes from './driver.routes.js';
+import discoveryRoutes from './discovery.routes.js';
 
 /**
  * Root API router. Feature routers (auth, users, vehicles, requests, offers,
@@ -16,8 +17,9 @@ router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/vehicles', vehicleRoutes);
 router.use('/drivers', driverRoutes);
+router.use('/discovery', discoveryRoutes);
 
-// Phase 4+ →
+// Phase 5+ →
 // router.use('/vehicles', vehicleRoutes);
 // router.use('/requests', requestRoutes);
 // router.use('/offers', offerRoutes);
