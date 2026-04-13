@@ -3,6 +3,7 @@ import { createApp } from './app.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { startRequestExpiryJob } from './jobs/requestExpiry.job.js';
 
 /**
  * Process entry point. Order matters: connect the database first, then start
@@ -17,6 +18,9 @@ async function bootstrap(): Promise<void> {
   server.listen(env.PORT, () => {
     logger.info(`🚐  API listening on http://localhost:${env.PORT}${env.API_PREFIX}`);
   });
+
+  // Background maintenance jobs.
+  startRequestExpiryJob();
 
   // ── Graceful shutdown ─────────────────────────────────
   const shutdown = async (signal: string): Promise<void> => {
