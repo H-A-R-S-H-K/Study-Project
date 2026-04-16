@@ -78,6 +78,49 @@ export interface DriverProfile {
   createdAt: string;
 }
 
+export interface TransportRequest {
+  id: string;
+  customer: string;
+  pickup: Place;
+  destination: Place;
+  vehicleType?: VehicleType;
+  serviceType: ServiceType;
+  scheduledAt: string;
+  description?: string;
+  status: RequestStatus;
+  offersCount: number;
+  acceptedOffer?: string;
+  selectedProvider?: string;
+  chat?: string;
+  cancelReason?: string;
+  createdAt: string;
+}
+
+export interface FeedRequest {
+  id: string;
+  pickup: Place;
+  destination: Place;
+  vehicleType?: VehicleType;
+  serviceType: ServiceType;
+  scheduledAt: string;
+  description?: string;
+  offersCount: number;
+  distanceMeters: number;
+  createdAt: string;
+  customer: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+    rating: { average: number; count: number };
+  };
+}
+
+export const SERVICE_TYPE_LABEL: Record<ServiceType, string> = {
+  vehicle_only: 'Vehicle only',
+  driver_only: 'Driver only',
+  vehicle_and_driver: 'Vehicle + Driver',
+};
+
 export const VEHICLE_TYPES: VehicleType[] = [
   'bike',
   'auto',
