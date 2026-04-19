@@ -4,13 +4,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import type { CustomerTabParamList } from './types';
 import { ProfileScreen } from '../profile/screens/ProfileScreen';
 import { NearbyProvidersScreen } from '../customer/screens/NearbyProvidersScreen';
+import { RequestsStack } from '../customer/RequestsStack';
 import { PlaceholderScreen } from '../common/components/PlaceholderScreen';
 
 const Tab = createBottomTabNavigator<CustomerTabParamList>();
 
-const MyRequestsScreen = (): React.JSX.Element => (
-  <PlaceholderScreen title="My Requests" subtitle="Phase 5" />
-);
 const ChatsScreen = (): React.JSX.Element => (
   <PlaceholderScreen title="Chats" subtitle="Phase 7" />
 );
@@ -26,7 +24,11 @@ export function CustomerNavigator(): React.JSX.Element {
       })}
     >
       <Tab.Screen name="Home" component={NearbyProvidersScreen} options={{ title: 'Find' }} />
-      <Tab.Screen name="MyRequests" component={MyRequestsScreen} options={{ title: 'Requests' }} />
+      <Tab.Screen
+        name="MyRequests"
+        component={RequestsStack}
+        options={{ title: 'Requests', headerShown: false }}
+      />
       <Tab.Screen name="Chats" component={ChatsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

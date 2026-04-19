@@ -6,13 +6,11 @@ import { useAppSelector } from '../redux/store';
 import { VehiclesStack } from '../vehicleOwner/VehiclesStack';
 import { DriverProfileScreen } from '../driver/screens/DriverProfileScreen';
 import { ProfileScreen } from '../profile/screens/ProfileScreen';
+import { RequestFeedScreen } from '../customer/screens/RequestFeedScreen';
 import { PlaceholderScreen } from '../common/components/PlaceholderScreen';
 
 const Tab = createBottomTabNavigator<ProviderTabParamList>();
 
-const FeedScreen = (): React.JSX.Element => (
-  <PlaceholderScreen title="Nearby Requests" subtitle="Phase 5" />
-);
 const ChatsScreen = (): React.JSX.Element => (
   <PlaceholderScreen title="Chats" subtitle="Phase 7" />
 );
@@ -33,7 +31,7 @@ export function ProviderNavigator(): React.JSX.Element {
         tabBarIcon: ({ color, size }) => <Icon name={iconFor(route.name)} color={color} size={size} />,
       })}
     >
-      <Tab.Screen name="Feed" component={FeedScreen} options={{ title: 'Requests' }} />
+      <Tab.Screen name="Feed" component={RequestFeedScreen} options={{ title: 'Requests' }} />
       <Tab.Screen
         name="Manage"
         component={isOwner ? VehiclesStack : DriverProfileScreen}

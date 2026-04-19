@@ -35,6 +35,13 @@ export type VehiclesStackParamList = {
   VehicleForm: { vehicleId?: string };
 };
 
+/** Nested stack for the customer's "Requests" tab. */
+export type CustomerRequestsStackParamList = {
+  MyRequests: undefined;
+  CreateRequest: undefined;
+  RequestDetail: { requestId: string };
+};
+
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
   CustomerApp: NavigatorScreenParams<CustomerTabParamList>;
