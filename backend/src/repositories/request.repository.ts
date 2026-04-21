@@ -107,6 +107,44 @@ class RequestRepository extends BaseRepository<IRequest> {
       .exec();
   }
 
+  /**
+   * Atomically transition an OPEN request to MATCHED for a specific offer. The
+   * `status: 'open'` guard in the filter means only the first accept wins — a
+   * concurrent second accept gets null and is rejected as a conflict. This is
+   * how we stay correct without multi-document transactions (which need a
+   * replica set); the single-document update is atomic on its own.
+   */
+  claimMatch(
+    requestId: string,
+    offerId: string,
+    providerId: string,
+  ): Promise<IRequest | null> {
+    return this.model
+      .findOneAndUpdate(
+        { _id: requestId, status: 'open' },
+        {
+          $set: {
+            status: 'matched',
+            acceptedOffer: offerId,
+            selectedProvider: providerId,
+          },
+        },
+        { new: true },
+      )
+      .exec();
+  }
+
+  /** Atomically complete a matched/in-progress request. */
+  claimComplete(requestId: string): Promise<IRequest | null> {
+    return this.model
+      .findOneAndUpdate(
+        { _id: requestId, status: { $in: ['matched', 'in_progress'] } },
+        { $set: { status: 'completed', completedAt: new Date() } },
+        { new: true },
+      )
+      .exec();
+  }
+
   /** Bulk-expire open requests whose expiry has passed. Returns affected count. */
   async expireStale(now: Date): Promise<number> {
     const res = await this.model
