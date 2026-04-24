@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as ctrl from '../controllers/request.controller.js';
+import * as offerCtrl from '../controllers/offer.controller.js';
 import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import {
@@ -9,6 +10,11 @@ import {
   feedQuerySchema,
   historyQuerySchema,
 } from '../validators/request.validators.js';
+import {
+  createOfferSchema,
+  requestOfferParams,
+  requestIdOnlyParams,
+} from '../validators/offer.validators.js';
 import { UserRole } from '../types/enums.js';
 
 const router = Router();
@@ -78,6 +84,62 @@ router.post(
   authorize(UserRole.CUSTOMER),
   validate({ params: requestIdParams, body: cancelRequestSchema }),
   ctrl.cancelRequest,
+);
+
+// ── Offers on a request ───────────────────────────────
+
+/**
+ * @openapi
+ * /requests/{requestId}/offers:
+ *   post:
+ *     tags: [Offers]
+ *     summary: Send a priced offer on a request (provider). Price is manual.
+ *     responses: { 201: { description: Offer sent } }
+ *   get:
+ *     tags: [Offers]
+ *     summary: List offers on my request (customer)
+ *     responses: { 200: { description: Offers with provider + vehicle } }
+ */
+router.post(
+  '/:requestId/offers',
+  authorize(UserRole.VEHICLE_OWNER, UserRole.DRIVER),
+  validate({ params: requestIdOnlyParams, body: createOfferSchema }),
+  offerCtrl.createOffer,
+);
+router.get(
+  '/:requestId/offers',
+  authorize(UserRole.CUSTOMER),
+  validate({ params: requestIdOnlyParams }),
+  offerCtrl.listRequestOffers,
+);
+
+/**
+ * @openapi
+ * /requests/{requestId}/offers/{offerId}/accept:
+ *   post:
+ *     tags: [Offers]
+ *     summary: Accept an offer (customer) → matches the request and opens a chat
+ *     responses: { 200: { description: Accepted, chat opened } }
+ */
+router.post(
+  '/:requestId/offers/:offerId/accept',
+  authorize(UserRole.CUSTOMER),
+  validate({ params: requestOfferParams }),
+  offerCtrl.acceptOffer,
+);
+
+/**
+ * @openapi
+ * /requests/{requestId}/complete:
+ *   post:
+ *     tags: [Requests]
+ *     summary: Mark a matched job complete (customer or matched provider)
+ *     responses: { 200: { description: Completed } }
+ */
+router.post(
+  '/:requestId/complete',
+  validate({ params: requestIdOnlyParams }),
+  offerCtrl.completeRequest,
 );
 
 export default router;
