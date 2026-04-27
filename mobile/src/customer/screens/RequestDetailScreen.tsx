@@ -71,9 +71,7 @@ export function RequestDetailScreen({ route, navigation }: Props): React.JSX.Ele
           mode="contained-tonal"
           icon="tag-multiple"
           style={styles.action}
-          onPress={() => {
-            /* Offers list — Phase 6 */
-          }}
+          onPress={() => navigation.navigate('OffersList', { requestId: request.id })}
         >
           View offers ({request.offersCount})
         </Button>

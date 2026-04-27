@@ -115,6 +115,44 @@ export interface FeedRequest {
   };
 }
 
+export interface Offer {
+  id: string;
+  request: string;
+  provider: string;
+  providerType: 'vehicle_owner' | 'driver';
+  vehicle?: string;
+  price: number;
+  currency: string;
+  message?: string;
+  status: OfferStatus;
+  createdAt: string;
+}
+
+export interface OfferDetail {
+  id: string;
+  request: string;
+  price: number;
+  currency: string;
+  message?: string;
+  status: OfferStatus;
+  providerType: 'vehicle_owner' | 'driver';
+  createdAt: string;
+  provider: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+    phone: string;
+    rating: { average: number; count: number };
+  };
+  vehicle?: {
+    id: string;
+    title: string;
+    type: VehicleType;
+    images: string[];
+    verifiedRegistration: boolean;
+  };
+}
+
 export const SERVICE_TYPE_LABEL: Record<ServiceType, string> = {
   vehicle_only: 'Vehicle only',
   driver_only: 'Driver only',
