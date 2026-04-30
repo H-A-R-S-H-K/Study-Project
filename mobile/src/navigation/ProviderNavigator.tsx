@@ -6,7 +6,7 @@ import { useAppSelector } from '../redux/store';
 import { VehiclesStack } from '../vehicleOwner/VehiclesStack';
 import { DriverProfileScreen } from '../driver/screens/DriverProfileScreen';
 import { ProfileScreen } from '../profile/screens/ProfileScreen';
-import { RequestFeedScreen } from '../customer/screens/RequestFeedScreen';
+import { ProviderFeedStack } from '../customer/ProviderFeedStack';
 import { PlaceholderScreen } from '../common/components/PlaceholderScreen';
 
 const Tab = createBottomTabNavigator<ProviderTabParamList>();
@@ -27,11 +27,12 @@ export function ProviderNavigator(): React.JSX.Element {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: route.name !== 'Manage', // Manage owns its own header stack
+        // Feed and Manage own their own header stacks.
+        headerShown: route.name !== 'Manage' && route.name !== 'Feed',
         tabBarIcon: ({ color, size }) => <Icon name={iconFor(route.name)} color={color} size={size} />,
       })}
     >
-      <Tab.Screen name="Feed" component={RequestFeedScreen} options={{ title: 'Requests' }} />
+      <Tab.Screen name="Feed" component={ProviderFeedStack} options={{ title: 'Requests' }} />
       <Tab.Screen
         name="Manage"
         component={isOwner ? VehiclesStack : DriverProfileScreen}

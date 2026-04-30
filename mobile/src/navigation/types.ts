@@ -40,6 +40,13 @@ export type CustomerRequestsStackParamList = {
   MyRequests: undefined;
   CreateRequest: undefined;
   RequestDetail: { requestId: string };
+  OffersList: { requestId: string };
+};
+
+/** Nested stack for the provider's "Requests" (feed) tab. */
+export type ProviderFeedStackParamList = {
+  RequestFeed: undefined;
+  MakeOffer: { requestId: string; vehicleType?: string };
 };
 
 export type RootStackParamList = {

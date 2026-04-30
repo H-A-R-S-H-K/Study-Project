@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { Card, Chip, Text, Button, ActivityIndicator, useTheme } from 'react-native-paper';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { ProviderFeedStackParamList } from '../../navigation/types';
 import { useCurrentLocation } from '../../maps/hooks/useCurrentLocation';
 import { useRequestFeed } from '../hooks/useRequests';
 import { SERVICE_TYPE_LABEL } from '../../types/domain';
@@ -14,7 +16,9 @@ import { spacing } from '../../theme';
  * provider's role can fulfil (vehicle owners vs drivers, drivable categories);
  * this screen just renders them nearest-first with a "Make offer" CTA (Phase 6).
  */
-export function RequestFeedScreen(): React.JSX.Element {
+type Props = NativeStackScreenProps<ProviderFeedStackParamList, 'RequestFeed'>;
+
+export function RequestFeedScreen({ navigation }: Props): React.JSX.Element {
   const theme = useTheme();
   const { coordinate, loading: locating, error: locError, refresh } = useCurrentLocation();
 
@@ -88,9 +92,12 @@ export function RequestFeedScreen(): React.JSX.Element {
             <Card.Actions>
               <Button
                 mode="contained"
-                onPress={() => {
-                  /* Make offer — Phase 6 */
-                }}
+                onPress={() =>
+                  navigation.navigate('MakeOffer', {
+                    requestId: item.id,
+                    vehicleType: item.vehicleType,
+                  })
+                }
               >
                 Make offer
               </Button>
