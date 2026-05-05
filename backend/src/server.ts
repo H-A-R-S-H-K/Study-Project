@@ -3,6 +3,7 @@ import { createApp } from './app.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
+import { initSocket } from './config/socket.js';
 import { startRequestExpiryJob } from './jobs/requestExpiry.job.js';
 
 /**
@@ -15,8 +16,12 @@ async function bootstrap(): Promise<void> {
   const app = createApp();
   const server = http.createServer(app);
 
+  // Attach the realtime layer (chat) to the same HTTP server.
+  initSocket(server);
+
   server.listen(env.PORT, () => {
     logger.info(`🚐  API listening on http://localhost:${env.PORT}${env.API_PREFIX}`);
+    logger.info('💬  Socket.IO ready');
   });
 
   // Background maintenance jobs.
