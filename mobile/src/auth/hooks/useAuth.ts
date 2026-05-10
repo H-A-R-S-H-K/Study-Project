@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { authApi, type RegisterPayload, type TokenPair } from '../api/authApi';
 import { useAppDispatch } from '../../redux/store';
 import { setCredentials, logout as logoutAction } from '../../redux/slices/authSlice';
+import { disconnectSocket } from '../../services/socket';
 import type { User } from '../../types/domain';
 
 /**
@@ -53,6 +54,9 @@ export function useLogout() {
   const dispatch = useAppDispatch();
   return useMutation({
     mutationFn: (refreshToken: string) => authApi.logout(refreshToken),
-    onSettled: () => dispatch(logoutAction()),
+    onSettled: () => {
+      disconnectSocket();
+      dispatch(logoutAction());
+    },
   });
 }

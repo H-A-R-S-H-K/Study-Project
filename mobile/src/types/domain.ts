@@ -153,6 +153,36 @@ export interface OfferDetail {
   };
 }
 
+export type MessageType = 'text' | 'image' | 'location' | 'system';
+
+export interface ChatMessage {
+  id: string;
+  chat: string;
+  sender: string;
+  type: MessageType;
+  text?: string;
+  imageUrl?: string;
+  location?: GeoPoint;
+  readBy: string[];
+  createdAt: string;
+}
+
+export interface Conversation {
+  id: string;
+  request: string;
+  lastMessage?: string;
+  lastMessageAt?: string;
+  lastMessageSender?: string;
+  unread: number;
+  other: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+    phone: string;
+    rating: { average: number; count: number };
+  };
+}
+
 export const SERVICE_TYPE_LABEL: Record<ServiceType, string> = {
   vehicle_only: 'Vehicle only',
   driver_only: 'Driver only',
