@@ -53,7 +53,6 @@ export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
   CustomerApp: NavigatorScreenParams<CustomerTabParamList>;
   ProviderApp: NavigatorScreenParams<ProviderTabParamList>;
-  // Shared modals mounted above the tabs (created in later phases):
-  RequestDetail: { requestId: string };
-  ChatRoom: { chatId: string };
+  // Shared screens mounted above the tabs:
+  ChatRoom: { chatId: string; title?: string };
 };

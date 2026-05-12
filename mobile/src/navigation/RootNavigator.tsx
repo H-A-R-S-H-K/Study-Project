@@ -6,6 +6,7 @@ import type { RootStackParamList } from './types';
 import { AuthNavigator } from './AuthNavigator';
 import { CustomerNavigator } from './CustomerNavigator';
 import { ProviderNavigator } from './ProviderNavigator';
+import { ChatRoomScreen } from '../chat/screens/ChatRoomScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -28,10 +29,21 @@ export function RootNavigator(): React.JSX.Element {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
           <Stack.Screen name="Auth" component={AuthNavigator} />
-        ) : isCustomer ? (
-          <Stack.Screen name="CustomerApp" component={CustomerNavigator} />
         ) : (
-          <Stack.Screen name="ProviderApp" component={ProviderNavigator} />
+          <>
+            <Stack.Screen
+              name={isCustomer ? 'CustomerApp' : 'ProviderApp'}
+              component={isCustomer ? CustomerNavigator : ProviderNavigator}
+            />
+            <Stack.Screen
+              name="ChatRoom"
+              component={ChatRoomScreen}
+              options={({ route }) => ({
+                headerShown: true,
+                title: route.params.title ?? 'Chat',
+              })}
+            />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

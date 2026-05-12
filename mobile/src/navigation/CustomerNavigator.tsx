@@ -5,13 +5,9 @@ import type { CustomerTabParamList } from './types';
 import { ProfileScreen } from '../profile/screens/ProfileScreen';
 import { NearbyProvidersScreen } from '../customer/screens/NearbyProvidersScreen';
 import { RequestsStack } from '../customer/RequestsStack';
-import { PlaceholderScreen } from '../common/components/PlaceholderScreen';
+import { ConversationsScreen } from '../chat/screens/ConversationsScreen';
 
 const Tab = createBottomTabNavigator<CustomerTabParamList>();
-
-const ChatsScreen = (): React.JSX.Element => (
-  <PlaceholderScreen title="Chats" subtitle="Phase 7" />
-);
 
 /** Customer bottom tabs. Home/Requests/Chats fill in over Phases 5–7. */
 export function CustomerNavigator(): React.JSX.Element {
@@ -29,7 +25,7 @@ export function CustomerNavigator(): React.JSX.Element {
         component={RequestsStack}
         options={{ title: 'Requests', headerShown: false }}
       />
-      <Tab.Screen name="Chats" component={ChatsScreen} />
+      <Tab.Screen name="Chats" component={ConversationsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

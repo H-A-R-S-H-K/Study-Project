@@ -7,13 +7,9 @@ import { VehiclesStack } from '../vehicleOwner/VehiclesStack';
 import { DriverProfileScreen } from '../driver/screens/DriverProfileScreen';
 import { ProfileScreen } from '../profile/screens/ProfileScreen';
 import { ProviderFeedStack } from '../customer/ProviderFeedStack';
-import { PlaceholderScreen } from '../common/components/PlaceholderScreen';
+import { ConversationsScreen } from '../chat/screens/ConversationsScreen';
 
 const Tab = createBottomTabNavigator<ProviderTabParamList>();
-
-const ChatsScreen = (): React.JSX.Element => (
-  <PlaceholderScreen title="Chats" subtitle="Phase 7" />
-);
 
 /**
  * Provider bottom tabs. The "Manage" tab is role-aware: vehicle owners get the
@@ -38,7 +34,7 @@ export function ProviderNavigator(): React.JSX.Element {
         component={isOwner ? VehiclesStack : DriverProfileScreen}
         options={{ title: isOwner ? 'Vehicles' : 'My Profile' }}
       />
-      <Tab.Screen name="Chats" component={ChatsScreen} />
+      <Tab.Screen name="Chats" component={ConversationsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
