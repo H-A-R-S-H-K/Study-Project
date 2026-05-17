@@ -10,10 +10,12 @@ import {
   type OfferDetailDto,
 } from '../dtos/offer.dto.js';
 import { toRequestDto, type RequestDto } from '../dtos/request.dto.js';
+import { notificationService } from './notification.service.js';
 import { ApiError } from '../utils/ApiError.js';
 import { buildPaginationMeta, type PaginationOptions } from '../utils/pagination.js';
 import type { PaginationMeta } from '../utils/ApiResponse.js';
 import {
+  NotificationType,
   OfferStatus,
   ProviderType,
   RequestStatus,
@@ -93,6 +95,13 @@ class OfferService {
       status: OfferStatus.PENDING,
     });
     await requestRepository.incrementOffers(requestId, 1);
+
+    await notificationService.notify(request.customer.toString(), {
+      type: NotificationType.NEW_OFFER,
+      title: 'New offer received',
+      body: `A provider offered ₹${input.price} for your request.`,
+      data: { requestId, offerId: offer._id.toString(), kind: NotificationType.NEW_OFFER },
+    });
     return toOfferDto(offer);
   }
 
@@ -162,6 +171,12 @@ class OfferService {
     const chat = await chatRepository.openForRequest(requestId, customerId, providerId);
     const withChat = await requestRepository.updateById(requestId, { chat: chat._id });
 
+    await notificationService.notify(providerId, {
+      type: NotificationType.OFFER_ACCEPTED,
+      title: 'Your offer was accepted!',
+      body: 'The customer accepted your offer. A chat has opened.',
+      data: { requestId, chatId: chat._id.toString(), kind: NotificationType.OFFER_ACCEPTED },
+    });
     return { request: toRequestDto(withChat ?? matched), chatId: chat._id.toString() };
   }
 
@@ -176,6 +191,20 @@ class OfferService {
 
     const completed = await requestRepository.claimComplete(requestId);
     if (!completed) throw ApiError.conflict('Only a matched job can be completed');
+
+    // Notify the other party so both sides know it's done (and can rate).
+    const otherParty =
+      request.customer.toString() === userId
+        ? request.selectedProvider?.toString()
+        : request.customer.toString();
+    if (otherParty) {
+      await notificationService.notify(otherParty, {
+        type: NotificationType.RIDE_COMPLETED,
+        title: 'Job completed',
+        body: 'The job was marked complete. You can now leave a rating.',
+        data: { requestId, kind: NotificationType.RIDE_COMPLETED },
+      });
+    }
     return toRequestDto(completed);
   }
 

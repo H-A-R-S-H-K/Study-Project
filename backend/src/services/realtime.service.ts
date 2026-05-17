@@ -25,4 +25,9 @@ export const realtime = {
   typing(chatId: string, userId: string, isTyping: boolean): void {
     getIo().to(`chat:${chatId}`).emit('typing', { chatId, userId, isTyping });
   },
+
+  /** In-app notification → the recipient's devices (instant badge update). */
+  notification(userId: string, payload: unknown): void {
+    getIo().to(`user:${userId}`).emit('notification:new', payload);
+  },
 };

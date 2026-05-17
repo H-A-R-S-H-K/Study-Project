@@ -1,7 +1,9 @@
 import { Types } from 'mongoose';
 import { chatRepository } from '../repositories/chat.repository.js';
 import { messageRepository } from '../repositories/message.repository.js';
+import { userRepository } from '../repositories/user.repository.js';
 import { realtime } from './realtime.service.js';
+import { notificationService } from './notification.service.js';
 import { storageService, type UploadedFile } from './storage.service.js';
 import {
   toMessageDto,
@@ -12,7 +14,7 @@ import {
 import { ApiError } from '../utils/ApiError.js';
 import { buildPaginationMeta } from '../utils/pagination.js';
 import type { PaginationMeta } from '../utils/ApiResponse.js';
-import { MessageType } from '../types/enums.js';
+import { MessageType, NotificationType } from '../types/enums.js';
 import type { GeoPoint } from '../models/geo.schema.js';
 import type { IChat } from '../models/index.js';
 
@@ -77,6 +79,15 @@ class ChatService {
 
     const dto = toMessageDto(message);
     realtime.newMessage(dto, recipientId);
+
+    // Durable push for the recipient (so they hear about it even if offline).
+    const sender = await userRepository.findById(userId, { name: 1 });
+    await notificationService.notify(recipientId, {
+      type: NotificationType.NEW_MESSAGE,
+      title: sender?.name ?? 'New message',
+      body: this.preview(type, input.text),
+      data: { chatId, kind: NotificationType.NEW_MESSAGE },
+    });
     return dto;
   }
 
