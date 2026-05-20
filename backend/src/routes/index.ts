@@ -8,6 +8,7 @@ import discoveryRoutes from './discovery.routes.js';
 import requestRoutes from './request.routes.js';
 import offerRoutes from './offer.routes.js';
 import chatRoutes from './chat.routes.js';
+import notificationRoutes from './notification.routes.js';
 
 /**
  * Root API router. Feature routers (auth, users, vehicles, requests, offers,
@@ -24,8 +25,9 @@ router.use('/discovery', discoveryRoutes);
 router.use('/requests', requestRoutes);
 router.use('/offers', offerRoutes);
 router.use('/chats', chatRoutes);
+router.use('/notifications', notificationRoutes);
 
-// Phase 8+ →
+// Phase 9+ →
 // router.use('/vehicles', vehicleRoutes);
 // router.use('/requests', requestRoutes);
 // router.use('/offers', offerRoutes);

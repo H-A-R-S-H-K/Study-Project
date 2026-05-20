@@ -8,6 +8,7 @@ import {
   updateLocationSchema,
   userIdParams,
 } from '../validators/user.validators.js';
+import { registerDeviceSchema } from '../validators/notification.validators.js';
 
 /** Profile self-service for any authenticated user (all roles). */
 const router = Router();
@@ -46,6 +47,22 @@ router.patch(
  *     responses: { 200: { description: Avatar updated } }
  */
 router.post('/me/avatar', authenticate, uploadAvatar, ctrl.updateMyAvatar);
+
+/**
+ * @openapi
+ * /users/me/devices:
+ *   post:
+ *     tags: [Users]
+ *     summary: Register this device's FCM token for push notifications
+ *     responses: { 200: { description: Registered } }
+ */
+router.post(
+  '/me/devices',
+  authenticate,
+  validate({ body: registerDeviceSchema }),
+  ctrl.registerDevice,
+);
+router.delete('/me/devices/:token', authenticate, ctrl.unregisterDevice);
 
 /**
  * @openapi
