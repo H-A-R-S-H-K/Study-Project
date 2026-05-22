@@ -153,6 +153,25 @@ export interface OfferDetail {
   };
 }
 
+export type NotificationType =
+  | 'new_nearby_request'
+  | 'new_offer'
+  | 'offer_accepted'
+  | 'new_message'
+  | 'booking_cancelled'
+  | 'ride_completed'
+  | 'document_verified';
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  data: Record<string, string>;
+  isRead: boolean;
+  createdAt: string;
+}
+
 export type MessageType = 'text' | 'image' | 'location' | 'system';
 
 export interface ChatMessage {

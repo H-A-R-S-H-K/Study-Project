@@ -1,7 +1,7 @@
 import { io, type Socket } from 'socket.io-client';
 import { config } from '../config';
 import { store } from '../redux/store';
-import type { ChatMessage } from '../types/domain';
+import type { ChatMessage, AppNotification } from '../types/domain';
 
 /**
  * Events the server pushes to the client. Typing these gives us checked
@@ -12,6 +12,7 @@ export interface ServerToClientEvents {
   'message:read': (payload: { chatId: string; userId: string; at: string }) => void;
   typing: (payload: { chatId: string; userId: string; isTyping: boolean }) => void;
   'conversation:updated': (payload: { chatId: string }) => void;
+  'notification:new': (notification: AppNotification) => void;
 }
 
 export interface ClientToServerEvents {

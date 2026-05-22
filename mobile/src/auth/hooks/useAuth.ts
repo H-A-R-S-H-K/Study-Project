@@ -3,6 +3,7 @@ import { authApi, type RegisterPayload, type TokenPair } from '../api/authApi';
 import { useAppDispatch } from '../../redux/store';
 import { setCredentials, logout as logoutAction } from '../../redux/slices/authSlice';
 import { disconnectSocket } from '../../services/socket';
+import { unregisterDeviceToken } from '../../notifications/services/fcm';
 import type { User } from '../../types/domain';
 
 /**
@@ -53,7 +54,11 @@ export function useRegister() {
 export function useLogout() {
   const dispatch = useAppDispatch();
   return useMutation({
-    mutationFn: (refreshToken: string) => authApi.logout(refreshToken),
+    // Best-effort device deregistration while we still have a valid token.
+    mutationFn: async (refreshToken: string) => {
+      await unregisterDeviceToken();
+      return authApi.logout(refreshToken);
+    },
     onSettled: () => {
       disconnectSocket();
       dispatch(logoutAction());
