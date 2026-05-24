@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, Avatar, List, Button, Divider, useTheme } from 'react-native-paper';
+import { Text, Avatar, List, Button, Divider, Badge, useTheme } from 'react-native-paper';
 import { useAppSelector } from '../../redux/store';
 import { useLogout } from '../../auth/hooks/useAuth';
+import { useUnreadCount } from '../../notifications/hooks/useNotifications';
 import { spacing } from '../../theme';
 
 const ROLE_LABEL: Record<string, string> = {
@@ -12,10 +13,15 @@ const ROLE_LABEL: Record<string, string> = {
   admin: 'Admin',
 };
 
-export function ProfileScreen(): React.JSX.Element {
+export function ProfileScreen({
+  navigation,
+}: {
+  navigation: { navigate: (screen: 'Notifications') => void };
+}): React.JSX.Element {
   const theme = useTheme();
   const { user, refreshToken } = useAppSelector((s) => s.auth);
   const logout = useLogout();
+  const { data: unread } = useUnreadCount();
 
   if (!user) return <View style={styles.container} />;
 
@@ -48,7 +54,18 @@ export function ProfileScreen(): React.JSX.Element {
       <Divider />
       <List.Section>
         <List.Item title="Edit profile" left={(p) => <List.Icon {...p} icon="account-edit" />} />
-        <List.Item title="Notifications" left={(p) => <List.Icon {...p} icon="bell-outline" />} />
+        <List.Item
+          title="Notifications"
+          left={(p) => <List.Icon {...p} icon="bell-outline" />}
+          right={(p) =>
+            unread && unread > 0 ? (
+              <Badge {...p} style={styles.badge}>
+                {unread}
+              </Badge>
+            ) : null
+          }
+          onPress={() => navigation.navigate('Notifications')}
+        />
         <List.Item title="Help & support" left={(p) => <List.Icon {...p} icon="help-circle-outline" />} />
       </List.Section>
 
@@ -70,5 +87,6 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center', paddingVertical: spacing.xl },
   name: { marginTop: spacing.md },
   meta: { opacity: 0.7, marginTop: spacing.xs },
+  badge: { alignSelf: 'center' },
   logout: { margin: spacing.lg, borderRadius: 12 },
 });

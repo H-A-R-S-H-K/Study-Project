@@ -10,6 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { store, persistor, useAppSelector } from './src/redux/store';
 import { queryClient } from './src/services/queryClient';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { usePushRegistration } from './src/notifications/hooks/useNotifications';
 import { lightTheme, darkTheme } from './src/theme';
 
 /**
@@ -22,6 +23,9 @@ function ThemedApp(): React.JSX.Element {
   const system = useColorScheme();
   const themeMode = useAppSelector((s) => s.ui.themeMode);
   const isDark = themeMode === 'system' ? system === 'dark' : themeMode === 'dark';
+
+  // Register for push + wire token-refresh/foreground handling once authed.
+  usePushRegistration();
 
   return (
     <PaperProvider theme={isDark ? darkTheme : lightTheme}>

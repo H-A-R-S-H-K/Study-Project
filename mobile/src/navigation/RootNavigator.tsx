@@ -7,6 +7,7 @@ import { AuthNavigator } from './AuthNavigator';
 import { CustomerNavigator } from './CustomerNavigator';
 import { ProviderNavigator } from './ProviderNavigator';
 import { ChatRoomScreen } from '../chat/screens/ChatRoomScreen';
+import { NotificationsScreen } from '../notifications/screens/NotificationsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -43,6 +44,7 @@ export function RootNavigator(): React.JSX.Element {
                 title: route.params.title ?? 'Chat',
               })}
             />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} />
           </>
         )}
       </Stack.Navigator>

@@ -55,4 +55,5 @@ export type RootStackParamList = {
   ProviderApp: NavigatorScreenParams<ProviderTabParamList>;
   // Shared screens mounted above the tabs:
   ChatRoom: { chatId: string; title?: string };
+  Notifications: undefined;
 };
