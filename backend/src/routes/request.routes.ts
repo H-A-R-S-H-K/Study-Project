@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as ctrl from '../controllers/request.controller.js';
 import * as offerCtrl from '../controllers/offer.controller.js';
+import * as ratingCtrl from '../controllers/rating.controller.js';
 import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import {
@@ -15,6 +16,7 @@ import {
   requestOfferParams,
   requestIdOnlyParams,
 } from '../validators/offer.validators.js';
+import { rateSchema, ratingRequestParams } from '../validators/rating.validators.js';
 import { UserRole } from '../types/enums.js';
 
 const router = Router();
@@ -140,6 +142,36 @@ router.post(
   '/:requestId/complete',
   validate({ params: requestIdOnlyParams }),
   offerCtrl.completeRequest,
+);
+
+// ── Ratings on a completed request ────────────────────
+
+/**
+ * @openapi
+ * /requests/{requestId}/ratings:
+ *   post:
+ *     tags: [Ratings]
+ *     summary: Rate the other party after completion (customer or provider)
+ *     responses: { 201: { description: Rating saved } }
+ */
+router.post(
+  '/:requestId/ratings',
+  validate({ params: ratingRequestParams, body: rateSchema }),
+  ratingCtrl.rate,
+);
+
+/**
+ * @openapi
+ * /requests/{requestId}/rating-status:
+ *   get:
+ *     tags: [Ratings]
+ *     summary: Whether the caller can rate this job (and who they'd rate)
+ *     responses: { 200: { description: Rating status } }
+ */
+router.get(
+  '/:requestId/rating-status',
+  validate({ params: ratingRequestParams }),
+  ratingCtrl.ratingStatus,
 );
 
 export default router;

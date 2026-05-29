@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import * as ctrl from '../controllers/user.controller.js';
+import * as ratingCtrl from '../controllers/rating.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
+import { rateeIdParams } from '../validators/rating.validators.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { uploadAvatar } from '../middlewares/upload.middleware.js';
 import {
@@ -73,5 +75,20 @@ router.delete('/me/devices/:token', authenticate, ctrl.unregisterDevice);
  *     responses: { 200: { description: Public profile } }
  */
 router.get('/:id', authenticate, validate({ params: userIdParams }), ctrl.getPublicProfile);
+
+/**
+ * @openapi
+ * /users/{id}/ratings:
+ *   get:
+ *     tags: [Ratings]
+ *     summary: A user's received ratings and reviews (paginated)
+ *     responses: { 200: { description: Received ratings } }
+ */
+router.get(
+  '/:id/ratings',
+  authenticate,
+  validate({ params: rateeIdParams }),
+  ratingCtrl.listReceived,
+);
 
 export default router;
