@@ -153,6 +153,21 @@ export interface OfferDetail {
   };
 }
 
+export interface RatingStatus {
+  canRate: boolean;
+  alreadyRated: boolean;
+  requestCompleted: boolean;
+  ratee?: { id: string; name: string };
+}
+
+export interface ReceivedRating {
+  id: string;
+  score: number;
+  review?: string;
+  createdAt: string;
+  rater: { id: string; name: string; avatarUrl?: string };
+}
+
 export type NotificationType =
   | 'new_nearby_request'
   | 'new_offer'
