@@ -8,6 +8,8 @@ import { CustomerNavigator } from './CustomerNavigator';
 import { ProviderNavigator } from './ProviderNavigator';
 import { ChatRoomScreen } from '../chat/screens/ChatRoomScreen';
 import { NotificationsScreen } from '../notifications/screens/NotificationsScreen';
+import { RateJobScreen } from '../ratings/screens/RateJobScreen';
+import { ReceivedRatingsScreen } from '../ratings/screens/ReceivedRatingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -45,6 +47,16 @@ export function RootNavigator(): React.JSX.Element {
               })}
             />
             <Stack.Screen name="Notifications" component={NotificationsScreen} />
+            <Stack.Screen
+              name="RateJob"
+              component={RateJobScreen}
+              options={{ headerShown: true, title: 'Leave a rating' }}
+            />
+            <Stack.Screen
+              name="Ratings"
+              component={ReceivedRatingsScreen}
+              options={{ headerShown: true, title: 'Ratings & reviews' }}
+            />
           </>
         )}
       </Stack.Navigator>

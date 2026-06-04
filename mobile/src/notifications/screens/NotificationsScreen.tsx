@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { List, Appbar, ActivityIndicator, Badge, useTheme } from 'react-native-paper';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/types';
 import {
   useNotifications,
   useMarkNotificationRead,
@@ -29,11 +31,23 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d`;
 }
 
-export function NotificationsScreen(): React.JSX.Element {
+type Props = NativeStackScreenProps<RootStackParamList, 'Notifications'>;
+
+export function NotificationsScreen({ navigation }: Props): React.JSX.Element {
   const theme = useTheme();
   const { data: notifications, isLoading, refetch, isRefetching } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllRead();
+
+  // Deep-link a notification to the relevant screen based on its payload.
+  const openNotification = (n: AppNotification): void => {
+    if (!n.isRead) markRead.mutate(n.id);
+    if (n.type === 'ride_completed' && n.data.requestId) {
+      navigation.navigate('RateJob', { requestId: n.data.requestId });
+    } else if (n.data.chatId) {
+      navigation.navigate('ChatRoom', { chatId: n.data.chatId });
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -61,7 +75,7 @@ export function NotificationsScreen(): React.JSX.Element {
               title={item.title}
               description={item.body}
               descriptionNumberOfLines={2}
-              onPress={() => !item.isRead && markRead.mutate(item.id)}
+              onPress={() => openNotification(item)}
               left={(p) => <List.Icon {...p} icon={ICON[item.type] ?? 'bell'} />}
               right={(p) => (
                 <View {...p} style={styles.right}>

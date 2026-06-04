@@ -16,7 +16,12 @@ const ROLE_LABEL: Record<string, string> = {
 export function ProfileScreen({
   navigation,
 }: {
-  navigation: { navigate: (screen: 'Notifications') => void };
+  navigation: {
+    navigate: {
+      (screen: 'Notifications'): void;
+      (screen: 'Ratings', params: { userId: string }): void;
+    };
+  };
 }): React.JSX.Element {
   const theme = useTheme();
   const { user, refreshToken } = useAppSelector((s) => s.auth);
@@ -65,6 +70,11 @@ export function ProfileScreen({
             ) : null
           }
           onPress={() => navigation.navigate('Notifications')}
+        />
+        <List.Item
+          title="Ratings & reviews"
+          left={(p) => <List.Icon {...p} icon="star-outline" />}
+          onPress={() => navigation.navigate('Ratings', { userId: user.id })}
         />
         <List.Item title="Help & support" left={(p) => <List.Icon {...p} icon="help-circle-outline" />} />
       </List.Section>

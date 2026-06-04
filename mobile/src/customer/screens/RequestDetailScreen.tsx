@@ -12,6 +12,7 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CustomerRequestsStackParamList } from '../../navigation/types';
 import { useRequest, useCancelRequest } from '../hooks/useRequests';
+import { useRatingStatus } from '../../ratings/hooks/useRatings';
 import { STATUS_LABEL, formatSchedule } from '../utils/requestDisplay';
 import { SERVICE_TYPE_LABEL } from '../../types/domain';
 import { spacing } from '../../theme';
@@ -23,6 +24,7 @@ export function RequestDetailScreen({ route, navigation }: Props): React.JSX.Ele
   const { requestId } = route.params;
   const { data: request, isLoading } = useRequest(requestId);
   const cancel = useCancelRequest();
+  const { data: ratingStatus } = useRatingStatus(requestId);
 
   if (isLoading || !request) {
     return (
@@ -74,6 +76,22 @@ export function RequestDetailScreen({ route, navigation }: Props): React.JSX.Ele
           onPress={() => navigation.navigate('OffersList', { requestId: request.id })}
         >
           View offers ({request.offersCount})
+        </Button>
+      )}
+
+      {request.status === 'completed' && ratingStatus?.canRate && (
+        <Button
+          mode="contained"
+          icon="star"
+          style={styles.action}
+          onPress={() =>
+            navigation.getParent()?.navigate('RateJob', {
+              requestId: request.id,
+              rateeName: ratingStatus.ratee?.name,
+            })
+          }
+        >
+          Rate {ratingStatus.ratee?.name ?? 'provider'}
         </Button>
       )}
 

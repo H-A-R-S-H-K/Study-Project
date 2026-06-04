@@ -56,4 +56,6 @@ export type RootStackParamList = {
   // Shared screens mounted above the tabs:
   ChatRoom: { chatId: string; title?: string };
   Notifications: undefined;
+  RateJob: { requestId: string; rateeName?: string };
+  Ratings: { userId: string };
 };
