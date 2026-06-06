@@ -21,6 +21,9 @@ export interface IUser extends Document {
   status: UserStatus;
   isPhoneVerified: boolean;
 
+  /** Only set for accounts that use email+password login (admins). */
+  passwordHash?: string;
+
   /** Last known location — powers "nearby" queries for providers. */
   location?: GeoPoint;
   homeAddress?: string;
@@ -62,6 +65,7 @@ const UserSchema = new Schema<IUser>(
       index: true,
     },
     isPhoneVerified: { type: Boolean, default: false },
+    passwordHash: { type: String, select: false }, // never returned by default
 
     location: { type: PointSchema },
     homeAddress: { type: String, trim: true, maxlength: 300 },
