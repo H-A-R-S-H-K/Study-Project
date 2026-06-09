@@ -9,6 +9,7 @@ import requestRoutes from './request.routes.js';
 import offerRoutes from './offer.routes.js';
 import chatRoutes from './chat.routes.js';
 import notificationRoutes from './notification.routes.js';
+import adminRoutes from './admin.routes.js';
 
 /**
  * Root API router. Feature routers (auth, users, vehicles, requests, offers,
@@ -26,8 +27,7 @@ router.use('/requests', requestRoutes);
 router.use('/offers', offerRoutes);
 router.use('/chats', chatRoutes);
 router.use('/notifications', notificationRoutes);
-
-// Phase 9+ →
+router.use('/admin', adminRoutes);
 // router.use('/vehicles', vehicleRoutes);
 // router.use('/requests', requestRoutes);
 // router.use('/offers', offerRoutes);

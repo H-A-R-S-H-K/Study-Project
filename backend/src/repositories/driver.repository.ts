@@ -72,6 +72,13 @@ class DriverRepository extends BaseRepository<IDriver> {
     return this.findOne({ user: userId });
   }
 
+  /** Cascade a document verification decision to the driver's licence flag. */
+  setLicenseVerifiedByDoc(documentId: string, verified: boolean): Promise<unknown> {
+    return this.model
+      .updateOne({ licenseDocument: documentId }, { $set: { licenseVerified: verified } })
+      .exec();
+  }
+
   /** Create the profile if absent, otherwise update it (used by PUT /drivers/me). */
   upsertByUser(userId: string, data: Partial<IDriver>): Promise<IDriver | null> {
     return this.model

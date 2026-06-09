@@ -93,6 +93,16 @@ class VehicleRepository extends BaseRepository<IVehicle> {
       .findByIdAndUpdate(id, { $push: { images: { $each: urls } } }, { new: true })
       .exec();
   }
+
+  /** Cascade a document verification decision to the vehicle's registration flag. */
+  setRegistrationVerifiedByDoc(documentId: string, verified: boolean): Promise<unknown> {
+    return this.model
+      .updateOne(
+        { registrationDocument: documentId },
+        { $set: { verifiedRegistration: verified } },
+      )
+      .exec();
+  }
 }
 
 export const vehicleRepository = new VehicleRepository();
