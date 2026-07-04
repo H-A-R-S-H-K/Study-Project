@@ -1,4 +1,5 @@
 import { otpRepository } from '../repositories/otp.repository.js';
+import { smsService } from './sms.service.js';
 import { generateOtp, sha256 } from '../utils/crypto.js';
 import { ApiError } from '../utils/ApiError.js';
 import { env, isProd } from '../config/env.js';
@@ -44,13 +45,15 @@ class OtpService {
   }
 
   private async deliver(phone: string, code: string): Promise<void> {
-    if (env.SMS_PROVIDER_KEY) {
-      // Real SMS integration is wired in the deployment phase.
-      logger.info({ phone }, 'OTP dispatched via SMS provider');
-      return;
+    const message = `Your Village Transport Connect code is ${code}. It expires in ${Math.round(
+      env.OTP_TTL_SECONDS / 60,
+    )} minutes.`;
+    try {
+      await smsService.send(phone, message);
+    } catch (err) {
+      // Delivery failures shouldn't 500 the request; the user can retry.
+      logger.error({ err, phone }, 'OTP SMS delivery failed');
     }
-    // Dev fallback: log so the flow can be exercised without an SMS gateway.
-    logger.warn({ phone, code }, '📱 DEV OTP (no SMS provider configured)');
   }
 }
 
