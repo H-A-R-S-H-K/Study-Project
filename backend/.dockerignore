@@ -1,0 +1,10 @@
+node_modules
+dist
+test
+coverage
+.env
+.env.*
+*.log
+uploads
+firebase-service-account.json
+.git
