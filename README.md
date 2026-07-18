@@ -92,19 +92,37 @@ React Hook Form + Zod, Socket.IO client, Firebase Cloud Messaging.
 
 ## Phase plan
 
-| Phase | Scope                                            | Status         |
-| ----- | ------------------------------------------------ | -------------- |
-| 1     | Setup, architecture, folder structure, DB schema | ✅ this phase  |
-| 2     | Authentication (phone OTP, JWT, refresh)         | pending        |
-| 3     | Role management                                  | pending        |
-| 4     | Maps (nearby, pins, tracking)                    | pending        |
-| 5     | Requests                                         | pending        |
-| 6     | Offers                                           | pending        |
-| 7     | Chat (Socket.IO)                                 | pending        |
-| 8     | Notifications (FCM)                              | pending        |
-| 9     | Ratings                                          | pending        |
-| 10    | Admin dashboard                                  | pending        |
-| 11    | Testing                                          | pending        |
-| 12    | Deployment                                       | pending        |
+| Phase | Scope                                            | Status |
+| ----- | ------------------------------------------------ | ------ |
+| 1     | Setup, architecture, folder structure, DB schema | ✅     |
+| 2     | Authentication (phone OTP, JWT, refresh)         | ✅     |
+| 3     | Role management                                  | ✅     |
+| 4     | Maps (nearby, pins, tracking)                    | ✅     |
+| 5     | Requests                                         | ✅     |
+| 6     | Offers                                           | ✅     |
+| 7     | Chat (Socket.IO)                                 | ✅     |
+| 8     | Notifications (FCM)                              | ✅     |
+| 9     | Ratings                                          | ✅     |
+| 10    | Admin dashboard                                  | ✅     |
+| 11    | Testing                                          | ✅     |
+| 12    | Deployment                                       | ✅     |
 
-See `docs/DATABASE_SCHEMA.md` for the full data model.
+## Running it
+
+```bash
+# Full server-side stack (API + MongoDB + admin dashboard)
+cp .env.example .env && docker compose up -d --build
+docker compose exec api npm run seed        # create the admin account
+
+# Or run pieces locally
+cd backend && npm install && npm run dev     # API on :5000
+cd admin   && npm install && npm run dev     # dashboard on :5173
+cd mobile  && npm install && npm run android # / run ios
+```
+
+## Docs
+- `docs/ARCHITECTURE.md` — backend/frontend architecture & scalability seams
+- `docs/DATABASE_SCHEMA.md` — full data model & indexes
+- `docs/MAPS_SETUP.md`, `docs/NOTIFICATIONS_SETUP.md` — native config
+- `docs/TESTING.md` — how to run the test suites
+- `docs/DEPLOYMENT.md` — Docker/compose, env, production checklist
