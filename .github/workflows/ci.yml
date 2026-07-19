@@ -39,6 +39,10 @@ jobs:
           cache-dependency-path: mobile/package-lock.json
       - working-directory: mobile
         run: npm ci --ignore-scripts
+      # keys.local.ts holds the API key and is gitignored, so it's absent in CI.
+      # Create the empty stub from the example so typecheck/build can resolve it.
+      - working-directory: mobile
+        run: cp src/config/keys.local.example.ts src/config/keys.local.ts
       - working-directory: mobile
         run: npm run typecheck
       - working-directory: mobile
