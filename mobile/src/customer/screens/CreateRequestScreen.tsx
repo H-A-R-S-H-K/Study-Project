@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, View } from 'react-native';
+import { StyleSheet, ScrollView, View, Platform } from 'react-native';
 import {
   Text,
   TextInput,
@@ -11,6 +11,7 @@ import {
   Modal,
   useTheme,
 } from 'react-native-paper';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CustomerRequestsStackParamList } from '../../navigation/types';
 import {
@@ -20,9 +21,12 @@ import {
   type VehicleType,
 } from '../../types/domain';
 import { LocationPicker } from '../../maps/components/LocationPicker';
+import { RouteMap } from '../../maps/components/RouteMap';
+import { AddressAutocomplete } from '../../maps/components/AddressAutocomplete';
 import type { Coordinate } from '../../maps/services/geolocation';
+import { useCurrentLocation } from '../../maps/hooks/useCurrentLocation';
 import { useCreateRequest } from '../hooks/useRequests';
-import { SCHEDULE_PRESETS } from '../utils/requestDisplay';
+import { formatSchedule } from '../utils/requestDisplay';
 import { extractApiError } from '../../utils/errors';
 import { spacing } from '../../theme';
 
@@ -31,36 +35,74 @@ type Props = NativeStackScreenProps<CustomerRequestsStackParamList, 'CreateReque
 interface PlaceState {
   address: string;
   coordinate: Coordinate | null;
+  locating: boolean;
 }
 
 const SERVICE_TYPES: ServiceType[] = ['vehicle_only', 'driver_only', 'vehicle_and_driver'];
+const emptyPlace = (): PlaceState => ({ address: '', coordinate: null, locating: false });
 
 export function CreateRequestScreen({ navigation }: Props): React.JSX.Element {
   const theme = useTheme();
   const create = useCreateRequest();
+  const { coordinate: myLocation } = useCurrentLocation();
 
   const [serviceType, setServiceType] = React.useState<ServiceType>('vehicle_and_driver');
   const [vehicleType, setVehicleType] = React.useState<VehicleType>('tractor');
-  const [pickup, setPickup] = React.useState<PlaceState>({ address: '', coordinate: null });
-  const [destination, setDestination] = React.useState<PlaceState>({ address: '', coordinate: null });
-  const [scheduleKey, setScheduleKey] = React.useState(SCHEDULE_PRESETS[2].key);
+  const [pickup, setPickup] = React.useState<PlaceState>(emptyPlace);
+  const [destination, setDestination] = React.useState<PlaceState>(emptyPlace);
+  const [scheduledAt, setScheduledAt] = React.useState<Date>(
+    () => new Date(Date.now() + 60 * 60 * 1000),
+  );
+  const [picker, setPicker] = React.useState<'date' | 'time' | null>(null);
   const [description, setDescription] = React.useState('');
-  const [picking, setPicking] = React.useState<null | 'pickup' | 'destination'>(null);
+  const [pickingOnMap, setPickingOnMap] = React.useState<null | 'pickup' | 'destination'>(null);
   const [submitted, setSubmitted] = React.useState(false);
+
+  // Prefill pickup with the user's current location, cab-app style.
+  React.useEffect(() => {
+    if (myLocation && !pickup.coordinate) {
+      setPickup({ address: 'My current location', coordinate: myLocation, locating: false });
+    }
+  }, [myLocation]);
 
   const needsVehicle = serviceType !== 'driver_only';
   const pickupValid = pickup.address.trim().length > 1 && pickup.coordinate;
   const destValid = destination.address.trim().length > 1 && destination.coordinate;
-  const canSubmit = pickupValid && destValid;
+  const timeValid = scheduledAt.getTime() > Date.now() - 60 * 1000;
+  const canSubmit = pickupValid && destValid && timeValid;
+
+  const setPlace = (which: 'pickup' | 'destination', next: Partial<PlaceState>): void => {
+    const setter = which === 'pickup' ? setPickup : setDestination;
+    setter((prev) => ({ ...prev, ...next }));
+  };
+
+  const onDateTimeChange = (event: { type: string }, selected?: Date): void => {
+    if (event.type === 'dismissed' || !selected) {
+      setPicker(null);
+      return;
+    }
+    const next = new Date(scheduledAt);
+    if (picker === 'date') {
+      next.setFullYear(selected.getFullYear(), selected.getMonth(), selected.getDate());
+      setScheduledAt(next);
+      setPicker('time'); // chain into time selection
+    } else {
+      next.setHours(selected.getHours(), selected.getMinutes(), 0, 0);
+      setScheduledAt(next);
+      setPicker(null);
+    }
+  };
 
   const onSubmit = async (): Promise<void> => {
     setSubmitted(true);
     if (!canSubmit) return;
-    const preset = SCHEDULE_PRESETS.find((p) => p.key === scheduleKey)!;
     await create.mutateAsync({
       pickup: {
         address: pickup.address.trim(),
-        location: { type: 'Point', coordinates: [pickup.coordinate!.longitude, pickup.coordinate!.latitude] },
+        location: {
+          type: 'Point',
+          coordinates: [pickup.coordinate!.longitude, pickup.coordinate!.latitude],
+        },
       },
       destination: {
         address: destination.address.trim(),
@@ -71,20 +113,43 @@ export function CreateRequestScreen({ navigation }: Props): React.JSX.Element {
       },
       serviceType,
       vehicleType: needsVehicle ? vehicleType : undefined,
-      scheduledAt: preset.toISO(),
+      scheduledAt: scheduledAt.toISOString(),
       description: description.trim() || undefined,
     });
     navigation.goBack();
   };
 
-  const activePlace = picking === 'pickup' ? pickup : destination;
-  const setActivePlace = picking === 'pickup' ? setPickup : setDestination;
+  const activePlace = pickingOnMap === 'pickup' ? pickup : destination;
 
   return (
     <ScrollView
       contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <Text variant="labelLarge">What do you need?</Text>
+      {/* Trip preview — pickup, destination and the route between them. */}
+      <RouteMap pickup={pickup.coordinate} destination={destination.coordinate} />
+
+      <AddressAutocomplete
+        label="Pickup"
+        address={pickup.address}
+        hasCoordinate={Boolean(pickup.coordinate)}
+        onSelect={(a, c) => setPlace('pickup', { address: a, coordinate: c })}
+        onClear={(a) => setPlace('pickup', { address: a, coordinate: null })}
+        onSetOnMap={() => setPickingOnMap('pickup')}
+        error={submitted && !pickupValid}
+      />
+      <AddressAutocomplete
+        label="Destination"
+        address={destination.address}
+        hasCoordinate={Boolean(destination.coordinate)}
+        onSelect={(a, c) => setPlace('destination', { address: a, coordinate: c })}
+        onClear={(a) => setPlace('destination', { address: a, coordinate: null })}
+        onSetOnMap={() => setPickingOnMap('destination')}
+        error={submitted && !destValid}
+      />
+
+      <Text variant="labelLarge" style={styles.label}>
+        What do you need?
+      </Text>
       <SegmentedButtons
         style={styles.segment}
         value={serviceType}
@@ -107,35 +172,36 @@ export function CreateRequestScreen({ navigation }: Props): React.JSX.Element {
         </>
       )}
 
-      <PlaceField
-        title="Pickup"
-        place={pickup}
-        onAddress={(a) => setPickup((p) => ({ ...p, address: a }))}
-        onPick={() => setPicking('pickup')}
-        error={submitted && !pickupValid}
-      />
-      <PlaceField
-        title="Destination"
-        place={destination}
-        onAddress={(a) => setDestination((p) => ({ ...p, address: a }))}
-        onPick={() => setPicking('destination')}
-        error={submitted && !destValid}
-      />
-
       <Text variant="labelLarge" style={styles.label}>
         When?
       </Text>
-      <View style={styles.chips}>
-        {SCHEDULE_PRESETS.map((p) => (
-          <Chip key={p.key} selected={scheduleKey === p.key} showSelectedOverlay onPress={() => setScheduleKey(p.key)}>
-            {p.label}
-          </Chip>
-        ))}
-      </View>
+      <Button
+        mode="outlined"
+        icon="calendar-clock"
+        style={styles.dateButton}
+        contentStyle={styles.dateButtonContent}
+        onPress={() => setPicker('date')}
+      >
+        {formatSchedule(scheduledAt.toISOString())}
+      </Button>
+      <HelperText type="error" visible={submitted && !timeValid}>
+        Pick a time in the future
+      </HelperText>
+      {picker && (
+        <DateTimePicker
+          value={scheduledAt}
+          mode={picker}
+          is24Hour={false}
+          minimumDate={picker === 'date' ? new Date() : undefined}
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={onDateTimeChange}
+        />
+      )}
 
       <TextInput
         mode="outlined"
         label="Description (optional)"
+        placeholder="e.g. Need to move farming equipment"
         multiline
         numberOfLines={3}
         value={description}
@@ -160,19 +226,22 @@ export function CreateRequestScreen({ navigation }: Props): React.JSX.Element {
         Post request
       </Button>
 
+      {/* Manual pin fallback (when geocoding isn't available). */}
       <Portal>
         <Modal
-          visible={picking !== null}
-          onDismiss={() => setPicking(null)}
+          visible={pickingOnMap !== null}
+          onDismiss={() => setPickingOnMap(null)}
           contentContainerStyle={styles.mapModal}
         >
           <View style={styles.mapWrap}>
             <LocationPicker
               initial={activePlace.coordinate ?? undefined}
-              onChange={(c) => setActivePlace((p) => ({ ...p, coordinate: c }))}
+              onChange={(c) =>
+                pickingOnMap && setPlace(pickingOnMap, { coordinate: c })
+              }
             />
           </View>
-          <Button mode="contained" style={styles.mapDone} onPress={() => setPicking(null)}>
+          <Button mode="contained" style={styles.mapDone} onPress={() => setPickingOnMap(null)}>
             Use this location
           </Button>
         </Modal>
@@ -181,51 +250,16 @@ export function CreateRequestScreen({ navigation }: Props): React.JSX.Element {
   );
 }
 
-function PlaceField({
-  title,
-  place,
-  onAddress,
-  onPick,
-  error,
-}: {
-  title: string;
-  place: PlaceState;
-  onAddress: (a: string) => void;
-  onPick: () => void;
-  error: boolean;
-}): React.JSX.Element {
-  return (
-    <View style={styles.placeField}>
-      <TextInput
-        mode="outlined"
-        label={`${title} address`}
-        value={place.address}
-        onChangeText={onAddress}
-        error={error}
-        right={
-          <TextInput.Icon
-            icon={place.coordinate ? 'map-marker-check' : 'map-marker-plus'}
-            onPress={onPick}
-          />
-        }
-      />
-      <HelperText type={error ? 'error' : 'info'} visible>
-        {error
-          ? 'Enter an address and set the point on the map'
-          : place.coordinate
-            ? 'Location set ✓'
-            : 'Tap the pin to set the point on the map'}
-      </HelperText>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: { padding: spacing.lg, flexGrow: 1 },
-  segment: { marginTop: spacing.sm },
-  label: { marginTop: spacing.md, marginBottom: spacing.sm },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  container: { padding: spacing.lg, flexGrow: 1, gap: spacing.xs },
   placeField: { marginTop: spacing.md },
+  placeHelperRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  placeHelper: { flexShrink: 1 },
+  label: { marginTop: spacing.md, marginBottom: spacing.sm },
+  segment: { marginTop: spacing.xs },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  dateButton: { borderRadius: 12, alignSelf: 'flex-start' },
+  dateButtonContent: { paddingVertical: spacing.xs },
   input: { marginTop: spacing.md },
   cta: { marginTop: spacing.lg, borderRadius: 12 },
   ctaContent: { paddingVertical: spacing.sm },
