@@ -17,12 +17,12 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'OtpVerify'>;
 
 export function OtpVerifyScreen({ route, navigation }: Props): React.JSX.Element {
   const theme = useTheme();
-  const { phone } = route.params;
+  const { phone, devCode } = route.params;
   const verifyOtp = useVerifyOtp();
   const requestOtp = useRequestOtp();
   const { control, handleSubmit, formState } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { code: '' },
+    defaultValues: { code: devCode ?? '' }, // dev: prefill the logged code
   });
 
   const onSubmit = handleSubmit(async ({ code }) => {
@@ -40,6 +40,12 @@ export function OtpVerifyScreen({ route, navigation }: Props): React.JSX.Element
       <Text variant="bodyMedium" style={styles.subtitle}>
         Enter the code we sent to {phone}.
       </Text>
+
+      {devCode ? (
+        <Text variant="labelMedium" style={{ color: theme.colors.primary, marginBottom: 8 }}>
+          Dev code: {devCode}
+        </Text>
+      ) : null}
 
       <Controller
         control={control}

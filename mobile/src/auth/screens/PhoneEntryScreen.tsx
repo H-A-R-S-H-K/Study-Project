@@ -29,8 +29,8 @@ export function PhoneEntryScreen({ navigation }: Props): React.JSX.Element {
   });
 
   const onSubmit = handleSubmit(async ({ phone }) => {
-    await requestOtp.mutateAsync(phone);
-    navigation.navigate('OtpVerify', { phone });
+    const { devCode } = await requestOtp.mutateAsync(phone);
+    navigation.navigate('OtpVerify', { phone, devCode });
   });
 
   return (
