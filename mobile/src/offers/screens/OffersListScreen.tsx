@@ -29,10 +29,10 @@ export function OffersListScreen({ route, navigation }: Props): React.JSX.Elemen
   const [confirm, setConfirm] = React.useState<OfferDetail | null>(null);
 
   const onAccept = async (offer: OfferDetail): Promise<void> => {
-    await accept.mutateAsync(offer.id);
+    const result = await accept.mutateAsync(offer.id);
     setConfirm(null);
-    // Chat is open on the server now; deep-linking into ChatRoom lands in Phase 7.
-    navigation.goBack();
+    // Straight to the trip map (route, details, actions) — Uber-style.
+    navigation.getParent()?.navigate('Trip', { requestId: result.request.id });
   };
 
   if (isLoading) {

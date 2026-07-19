@@ -48,6 +48,9 @@ export function useCompleteRequest() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (requestId: string) => offerApi.complete(requestId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['requests'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['requests'] });
+      qc.invalidateQueries({ queryKey: ['rating-status'] }); // enables "Rate"
+    },
   });
 }

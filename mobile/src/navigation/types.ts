@@ -10,7 +10,7 @@ import type { UserRole } from '../types/domain';
 export type AuthStackParamList = {
   Welcome: undefined;
   PhoneEntry: undefined;
-  OtpVerify: { phone: string };
+  OtpVerify: { phone: string; devCode?: string };
   RoleSelect: { registrationToken: string };
   ProfileSetup: { registrationToken: string; role: UserRole };
 };
@@ -54,8 +54,9 @@ export type RootStackParamList = {
   CustomerApp: NavigatorScreenParams<CustomerTabParamList>;
   ProviderApp: NavigatorScreenParams<ProviderTabParamList>;
   // Shared screens mounted above the tabs:
-  ChatRoom: { chatId: string; title?: string };
+  ChatRoom: { chatId: string; title?: string; requestId?: string };
   Notifications: undefined;
   RateJob: { requestId: string; rateeName?: string };
   Ratings: { userId: string };
+  Trip: { requestId: string };
 };

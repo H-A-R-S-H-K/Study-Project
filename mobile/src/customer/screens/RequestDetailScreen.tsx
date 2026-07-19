@@ -79,6 +79,17 @@ export function RequestDetailScreen({ route, navigation }: Props): React.JSX.Ele
         </Button>
       )}
 
+      {request.status === 'matched' && (
+        <Button
+          mode="contained"
+          icon="map-marker-path"
+          style={styles.action}
+          onPress={() => navigation.getParent()?.navigate('Trip', { requestId: request.id })}
+        >
+          Track ride on map
+        </Button>
+      )}
+
       {request.status === 'completed' && ratingStatus?.canRate && (
         <Button
           mode="contained"

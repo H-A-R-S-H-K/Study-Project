@@ -5,6 +5,7 @@ export function useRatingStatus(requestId: string) {
   return useQuery({
     queryKey: ['rating-status', requestId],
     queryFn: () => ratingApi.status(requestId),
+    enabled: Boolean(requestId),
   });
 }
 

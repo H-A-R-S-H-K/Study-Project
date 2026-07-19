@@ -16,7 +16,11 @@ export function useMyRequests(status?: RequestStatus) {
 }
 
 export function useRequest(id: string) {
-  return useQuery({ queryKey: ['requests', id], queryFn: () => requestApi.getById(id) });
+  return useQuery({
+    queryKey: ['requests', id],
+    queryFn: () => requestApi.getById(id),
+    enabled: Boolean(id),
+  });
 }
 
 export function useCreateRequest() {

@@ -12,7 +12,12 @@ import { EmptyState } from '../../common/components/EmptyState';
 export function ConversationsScreen({
   navigation,
 }: {
-  navigation: { navigate: (screen: 'ChatRoom', params: { chatId: string; title: string }) => void };
+  navigation: {
+    navigate: (
+      screen: 'ChatRoom',
+      params: { chatId: string; title: string; requestId: string },
+    ) => void;
+  };
 }): React.JSX.Element {
   const theme = useTheme();
   const { data: conversations, isLoading, refetch, isRefetching } = useConversations();
@@ -48,7 +53,11 @@ export function ConversationsScreen({
               description={item.lastMessage ?? 'Say hello 👋'}
               descriptionNumberOfLines={1}
               onPress={() =>
-                navigation.navigate('ChatRoom', { chatId: item.id, title: item.other.name })
+                navigation.navigate('ChatRoom', {
+                  chatId: item.id,
+                  title: item.other.name,
+                  requestId: item.request,
+                })
               }
               left={(p) =>
                 item.other.avatarUrl ? (

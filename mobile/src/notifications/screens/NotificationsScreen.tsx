@@ -44,8 +44,13 @@ export function NotificationsScreen({ navigation }: Props): React.JSX.Element {
     if (!n.isRead) markRead.mutate(n.id);
     if (n.type === 'ride_completed' && n.data.requestId) {
       navigation.navigate('RateJob', { requestId: n.data.requestId });
+    } else if (n.type === 'offer_accepted' && n.data.requestId) {
+      navigation.navigate('Trip', { requestId: n.data.requestId });
     } else if (n.data.chatId) {
-      navigation.navigate('ChatRoom', { chatId: n.data.chatId });
+      navigation.navigate('ChatRoom', {
+        chatId: n.data.chatId,
+        requestId: n.data.requestId,
+      });
     }
   };
 

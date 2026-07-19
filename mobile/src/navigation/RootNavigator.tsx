@@ -10,6 +10,7 @@ import { ChatRoomScreen } from '../chat/screens/ChatRoomScreen';
 import { NotificationsScreen } from '../notifications/screens/NotificationsScreen';
 import { RateJobScreen } from '../ratings/screens/RateJobScreen';
 import { ReceivedRatingsScreen } from '../ratings/screens/ReceivedRatingsScreen';
+import { TripScreen } from '../customer/screens/TripScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -47,6 +48,11 @@ export function RootNavigator(): React.JSX.Element {
               })}
             />
             <Stack.Screen name="Notifications" component={NotificationsScreen} />
+            <Stack.Screen
+              name="Trip"
+              component={TripScreen}
+              options={{ headerShown: true, title: 'Your Trip' }}
+            />
             <Stack.Screen
               name="RateJob"
               component={RateJobScreen}
