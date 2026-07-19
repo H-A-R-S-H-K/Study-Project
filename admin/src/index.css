@@ -26,13 +26,16 @@ a { color: var(--primary-2); }
 /* ── Layout ────────────────────────────────── */
 .shell { display: flex; min-height: 100vh; }
 .sidebar {
-  width: 220px;
+  flex: 0 0 220px; /* fixed width — never grow or shrink */
   background: var(--surface);
   border-right: 1px solid var(--border);
   padding: 20px 14px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 .brand { font-weight: 700; font-size: 18px; display: flex; gap: 8px; align-items: center; margin-bottom: 18px; }
 .brand.big { font-size: 22px; margin-bottom: 6px; }
@@ -43,7 +46,9 @@ a { color: var(--primary-2); }
 .nav-item:hover { background: var(--surface-2); color: var(--text); }
 .nav-item.active { background: var(--primary); color: #fff; }
 .logout { margin-top: auto; }
-.content { flex: 1; padding: 28px 32px; overflow-y: auto; }
+/* min-width:0 lets this column shrink so wide tables scroll inside it instead
+   of forcing the layout wider and overlapping the sidebar. */
+.content { flex: 1 1 auto; min-width: 0; padding: 28px 32px; overflow: auto; }
 
 /* ── Header / sections ─────────────────────── */
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
