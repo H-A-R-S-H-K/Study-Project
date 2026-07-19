@@ -50,11 +50,12 @@ export const requestApi = {
   },
 
   async feed(params: FeedParams): Promise<FeedRequest[]> {
-    const sp = new URLSearchParams({ lng: String(params.lng), lat: String(params.lat) });
-    if (params.radius) sp.set('radius', String(params.radius));
-    if (params.vehicleType) sp.set('vehicleType', params.vehicleType);
+    // Plain-string query (Hermes lacks reliable URLSearchParams support).
+    const parts = [`lng=${params.lng}`, `lat=${params.lat}`];
+    if (params.radius) parts.push(`radius=${params.radius}`);
+    if (params.vehicleType) parts.push(`vehicleType=${params.vehicleType}`);
     const { data } = await apiClient.get<ApiEnvelope<FeedRequest[]>>(
-      `/requests/feed?${sp.toString()}`,
+      `/requests/feed?${parts.join('&')}`,
     );
     return data.data;
   },

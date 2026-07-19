@@ -43,11 +43,13 @@ export interface NearbyParams {
   type?: VehicleType;
 }
 
+// Built with plain strings (not URLSearchParams — Hermes doesn't reliably
+// support it, which would throw before the request is ever sent).
 const query = (p: NearbyParams): string => {
-  const sp = new URLSearchParams({ lng: String(p.lng), lat: String(p.lat) });
-  if (p.radius) sp.set('radius', String(p.radius));
-  if (p.type) sp.set('type', p.type);
-  return sp.toString();
+  const parts = [`lng=${p.lng}`, `lat=${p.lat}`];
+  if (p.radius) parts.push(`radius=${p.radius}`);
+  if (p.type) parts.push(`type=${p.type}`);
+  return parts.join('&');
 };
 
 export const discoveryApi = {
