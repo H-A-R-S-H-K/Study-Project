@@ -43,6 +43,9 @@ mobile/.expo/
 google-services.json
 GoogleService-Info.plist
 
+# Local secrets — API keys, never commit
+**/keys.local.ts
+
 # Uploads (local dev disk-storage fallback)
 uploads/
 backend/uploads/

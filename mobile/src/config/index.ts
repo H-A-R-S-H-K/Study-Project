@@ -1,3 +1,7 @@
+// The Google API key lives in an untracked file (keys.local.ts) so it never
+// gets committed. Copy keys.local.example.ts → keys.local.ts and paste your key.
+import { GOOGLE_API_KEY } from './keys.local';
+
 /**
  * App configuration. In production these come from build-time env (react-native-config);
  * defaults here target a local backend during development.
@@ -9,10 +13,7 @@ export const config = {
   socketUrl: 'http://10.0.2.2:5055',
   nearbyRadiusMeters: 15_000,
   requestTimeoutMs: 20_000,
-  // Google key for the Geocoding + Directions web services (address search and
-  // route drawing). Enable "Geocoding API" and "Directions API" on this key in
-  // Google Cloud, and don't restrict it to Android apps only (web-service calls
-  // can't send a package/SHA-1). If it's unset/blocked, the app falls back to
-  // manual map-pin selection and a straight-line route.
-  googleApiKey: 'AIzaSyCXnGS7zvopefcnUgVNEgRNRpz8azzd9RE',
+  // Google key for Maps/Places/Routes/Geocoding. Loaded from keys.local.ts
+  // (gitignored). If empty, the app falls back to manual pin + straight-line route.
+  googleApiKey: GOOGLE_API_KEY,
 } as const;
